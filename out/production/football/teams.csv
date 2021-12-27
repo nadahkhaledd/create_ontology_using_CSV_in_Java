@@ -1,4 +1,4 @@
-team_name,common_name,team_season,country,matches_played_count,wins_count,draws_count,losses_count,points_per_game,performance_rank_overall,goals_scored_count,total_goals_count
+team_name,common_name,team_season,country,matches_played_counts,wins_counts,draws_counts,losses_counts,points_per_game,performance_rank_overall,goals_scored_counts,total_goals_counts
 Arsenal FC,Arsenal,2018/2019,England,38,21,7,10,1.84,5,73,124
 Tottenham Hotspur FC,Tottenham Hotspur,2018/2019,England,38,23,2,13,1.87,4,67,106
 Manchester City FC,Manchester City,2018/2019,England,38,32,2,4,2.58,1,95,118

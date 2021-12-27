@@ -19,7 +19,13 @@ public class createOntology {
             if(data.get(i)[0].contains(" "))
                 data.get(i)[0] = data.get(i)[0].replace(" ", "_");
 
-            Individual instance = dataClass.createIndividual(uri +  data.get(i)[0]);
+            Individual instance;
+            if(dataClass.getLocalName().contains("match"))
+                 instance = dataClass.createIndividual(uri + i);
+            else
+                instance = dataClass.createIndividual(uri + data.get(i)[0]);
+
+
             individuals.add(instance);
             for(int j=0; j<data.get(0).length; j++)
             {
@@ -81,76 +87,24 @@ public class createOntology {
 
 
         // create data properties and individuals and filling data properties
-            //for matches with individual is the timestamp
+        //for matches with individual is the timestamp
         Vector<Individual> matchIndividuals =  make_dataProperties_individuals(matchesData, model, baseURI, matchClass);
-            //for players with the full_name
+        //for players with the full_name
         Vector<Individual> playerIndividuals =  make_dataProperties_individuals(playersData, model, baseURI, playerClass);
-            //for teams with the team_name
+        //for teams with the team_name
         Vector<Individual> teamIndividuals =  make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
 
 
         // filling object properties
-            // playsInClub (player, team)  with column (current_club)
+        // playsInClub (player, team)  with column (current_club)
         fill_object_properties(playerIndividuals, playsInClub, playersData, 5);
-            // hasHomeTeam (match, team) with column (home_team_name)
+        // hasHomeTeam (match, team) with column (home_team_name)
         fill_object_properties(matchIndividuals, hasHomeTeam, matchesData, 4);
-            // hasAwayTeam (match, team) with column (away_team_name)
+        // hasAwayTeam (match, team) with column (away_team_name)
         fill_object_properties(matchIndividuals, hasAwayTeam, matchesData, 5);
 
 
         model.write(System.out);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
