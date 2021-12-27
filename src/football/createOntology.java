@@ -87,20 +87,20 @@ public class createOntology {
 
 
         // create data properties and individuals and filling data properties
-        //for matches with individual is the timestamp
+            //for matches with individual is sequence id
         Vector<Individual> matchIndividuals =  make_dataProperties_individuals(matchesData, model, baseURI, matchClass);
-        //for players with the full_name
+            //for players with the full_name
         Vector<Individual> playerIndividuals =  make_dataProperties_individuals(playersData, model, baseURI, playerClass);
-        //for teams with the team_name
+            //for teams with the team_name
         Vector<Individual> teamIndividuals =  make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
 
 
         // filling object properties
-        // playsInClub (player, team)  with column (current_club)
+            // playsInClub (player, team)  with column (current_club)
         fill_object_properties(playerIndividuals, playsInClub, playersData, 5);
-        // hasHomeTeam (match, team) with column (home_team_name)
+            // hasHomeTeam (match, team) with column (home_team_name)
         fill_object_properties(matchIndividuals, hasHomeTeam, matchesData, 4);
-        // hasAwayTeam (match, team) with column (away_team_name)
+            // hasAwayTeam (match, team) with column (away_team_name)
         fill_object_properties(matchIndividuals, hasAwayTeam, matchesData, 5);
 
 
