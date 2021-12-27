@@ -48,11 +48,15 @@ public class createOntology {
     }
 
 
-    static public void fill_object_properties(Vector<Individual> domain, ObjectProperty property, Vector<String[]> data, int index)
+    static public void fill_object_properties(Vector<Individual> domain, OntClass domainClass, Vector<String[]> data, String uri, ObjectProperty property, int index)
     {
         for(int i=0; i<domain.size(); i++)
         {
-            domain.get(i).addProperty(property, data.get(i+1)[index]);
+            if(data.get(i)[index].contains(" "))
+                data.get(i)[index] = data.get(i)[index].replace(" ", "_");
+
+            Individual range = domainClass.createIndividual(uri + data.get(i)[index]);
+            domain.get(i).addProperty(property, range);
         }
     }
 
@@ -97,11 +101,11 @@ public class createOntology {
 
         // filling object properties
             // playsInClub (player, team)  with column (current_club)
-        fill_object_properties(playerIndividuals, playsInClub, playersData, 5);
+        fill_object_properties(playerIndividuals, playerClass, playersData, baseURI, playsInClub, 5);
             // hasHomeTeam (match, team) with column (home_team_name)
-        fill_object_properties(matchIndividuals, hasHomeTeam, matchesData, 4);
+        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasHomeTeam, 4);
             // hasAwayTeam (match, team) with column (away_team_name)
-        fill_object_properties(matchIndividuals, hasAwayTeam, matchesData, 5);
+        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasAwayTeam, 5);
 
 
         model.write(System.out);
