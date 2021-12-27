@@ -10,18 +10,22 @@ import java.util.Vector;
 public class createOntology {
 
 
-    static public void make_dataProperties_individuals(Vector<String[]> data, OntModel model, String uri, OntClass dataClass)
+    static public Vector<Individual> make_dataProperties_individuals(Vector<String[]> data, OntModel model, String uri, OntClass dataClass)
     {
+        Vector<Individual> individuals = new Vector<Individual>();
+
         for(int i=1; i<data.size(); i++)
         {
             if(data.get(i)[0].contains(" "))
                 data.get(i)[0] = data.get(i)[0].replace(" ", "_");
 
             Individual instance = dataClass.createIndividual(uri +  data.get(i)[0]);
+            individuals.add(instance);
             for(int j=0; j<data.get(0).length; j++)
             {
                 DatatypeProperty ontologyProperty = model.createDatatypeProperty(uri + data.get(0)[j]);
                 ontologyProperty.addDomain(dataClass);
+
                 if(data.get(0)[j].contains("overall") || data.get(0)[j].contains("count"))
                     ontologyProperty.addRange(XSD.integer);
                 else if(data.get(0)[j].equalsIgnoreCase("points_per_game"))
@@ -32,6 +36,17 @@ public class createOntology {
                 instance.addProperty(ontologyProperty, data.get(i)[j]);
 
             }
+        }
+
+        return individuals;
+    }
+
+
+    static public void fill_object_properties(Vector<Individual> domain, ObjectProperty property, Vector<String[]> data, int index)
+    {
+        for(int i=0; i<domain.size(); i++)
+        {
+            domain.get(i).addProperty(property, data.get(i+1)[index]);
         }
     }
 
@@ -50,31 +65,37 @@ public class createOntology {
         OntClass playerClass = model.createClass(baseURI + "player");
         OntClass teamClass = model.createClass(baseURI + "team");
 
-        // create object Properties
-        ObjectProperty playedMatch = model.createObjectProperty( baseURI + "playedMatch" );
-        playedMatch.addDomain(playerClass);
-        playedMatch.addRange(matchClass);
 
+        // create object Properties
         ObjectProperty playsInClub = model.createObjectProperty( baseURI + "playsInClub" );
-        playedMatch.addDomain(playerClass);
-        playedMatch.addRange(teamClass);
+        playsInClub.addDomain(playerClass);
+        playsInClub.addRange(teamClass);
 
         ObjectProperty hasHomeTeam = model.createObjectProperty( baseURI + "hasHomeTeam" );
-        playedMatch.addDomain(matchClass);
-        playedMatch.addRange(teamClass);
+        hasHomeTeam.addDomain(matchClass);
+        hasHomeTeam.addRange(teamClass);
 
         ObjectProperty hasAwayTeam = model.createObjectProperty( baseURI + "hasAwayTeam" );
-        playedMatch.addDomain(matchClass);
-        playedMatch.addRange(teamClass);
+        hasAwayTeam.addDomain(matchClass);
+        hasAwayTeam.addRange(teamClass);
 
 
-        // create data properties and individuals
+        // create data properties and individuals and filling data properties
             //for matches with individual is the timestamp
-        make_dataProperties_individuals(matchesData, model, baseURI, matchClass);
+        Vector<Individual> matchIndividuals =  make_dataProperties_individuals(matchesData, model, baseURI, matchClass);
             //for players with the full_name
-        make_dataProperties_individuals(playersData, model, baseURI, playerClass);
+        Vector<Individual> playerIndividuals =  make_dataProperties_individuals(playersData, model, baseURI, playerClass);
             //for teams with the team_name
-       make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
+        Vector<Individual> teamIndividuals =  make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
+
+
+        // filling object properties
+            // playsInClub (player, team)  with column (current_club)
+        fill_object_properties(playerIndividuals, playsInClub, playersData, 5);
+            // hasHomeTeam (match, team) with column (home_team_name)
+        fill_object_properties(matchIndividuals, hasHomeTeam, matchesData, 4);
+            // hasAwayTeam (match, team) with column (away_team_name)
+        fill_object_properties(matchIndividuals, hasAwayTeam, matchesData, 5);
 
 
         model.write(System.out);
