@@ -32,7 +32,7 @@ public class createOntology {
                 DatatypeProperty ontologyProperty = model.createDatatypeProperty(uri + data.get(0)[j]);
                 ontologyProperty.addDomain(dataClass);
 
-                if(data.get(0)[j].contains("overall") || data.get(0)[j].contains("count"))
+                if(data.get(0)[j].contains("overall") || data.get(0)[j].contains("counts"))
                     ontologyProperty.addRange(XSD.integer);
                 else if(data.get(0)[j].equalsIgnoreCase("points_per_game"))
                     ontologyProperty.addRange(XSD.xdouble);
