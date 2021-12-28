@@ -21,7 +21,7 @@ public class createOntology {
 
             Individual instance;
             if(dataClass.getLocalName().contains("match"))
-                 instance = dataClass.createIndividual(uri + i);
+                instance = dataClass.createIndividual(uri + i);
             else
                 instance = dataClass.createIndividual(uri + data.get(i)[0]);
 
@@ -48,15 +48,20 @@ public class createOntology {
     }
 
 
-    static public void fill_object_properties(Vector<Individual> domain, OntClass domainClass, Vector<String[]> data, String uri, ObjectProperty property, int index)
+    static public void fill_object_properties(Vector<Individual> domain, OntClass domainClass, Vector<String[]> data, String uri, ObjectProperty property, int index, Vector<Individual> range, DatatypeProperty commanNameProperty, DatatypeProperty Property)
     {
         for(int i=0; i<domain.size(); i++)
         {
             if(data.get(i)[index].contains(" "))
                 data.get(i)[index] = data.get(i)[index].replace(" ", "_");
 
-            Individual range = domainClass.createIndividual(uri + data.get(i)[index]);
-            domain.get(i).addProperty(property, range);
+            for(int j = 0; j < range.size(); j++) {
+                if(range.get(j).getPropertyValue(commanNameProperty).equals(domain.get(i).getPropertyValue(Property))) {
+                    domain.get(i).addProperty(property, range.get(j));
+                    break;
+                }
+            }
+
         }
     }
 
@@ -91,29 +96,32 @@ public class createOntology {
 
 
         // create data properties and individuals and filling data properties
-            //for matches with individual is sequence id
+        //for matches with individual is sequence id
         Vector<Individual> matchIndividuals =  make_dataProperties_individuals(matchesData, model, baseURI, matchClass);
-            //for players with the full_name
+        //for players with the full_name
         Vector<Individual> playerIndividuals =  make_dataProperties_individuals(playersData, model, baseURI, playerClass);
-            //for teams with the team_name
+        //for teams with the team_name
         Vector<Individual> teamIndividuals =  make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
 
 
+        DatatypeProperty commanNameProperty = model.getDatatypeProperty(baseURI + teamsData.get(0)[1]);
+        DatatypeProperty currentClubProperty = model.getDatatypeProperty(baseURI + playersData.get(0)[5]);
+
+        DatatypeProperty homeTeamNameProperty = model.getDatatypeProperty(baseURI + matchesData.get(0)[4]);
+        DatatypeProperty awayTeamNameProperty = model.getDatatypeProperty(baseURI + matchesData.get(0)[5]);
+
+
         // filling object properties
-            // playsInClub (player, team)  with column (current_club)
-        fill_object_properties(playerIndividuals, playerClass, playersData, baseURI, playsInClub, 5);
-            // hasHomeTeam (match, team) with column (home_team_name)
-        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasHomeTeam, 4);
-            // hasAwayTeam (match, team) with column (away_team_name)
-        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasAwayTeam, 5);
+        // playsInClub (player, team)  with column (current_club)
+        fill_object_properties(playerIndividuals, playerClass, playersData, baseURI, playsInClub, 5, teamIndividuals, commanNameProperty, currentClubProperty);
+        // hasHomeTeam (match, team) with column (home_team_name)
+        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasHomeTeam, 4,teamIndividuals,commanNameProperty,homeTeamNameProperty);
+        // hasAwayTeam (match, team) with column (away_team_name)
+        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasAwayTeam, 5,teamIndividuals,commanNameProperty,awayTeamNameProperty);
 
 
         model.write(System.out);
     }
-
-
-
-
 
 
 }
