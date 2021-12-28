@@ -48,7 +48,8 @@ public class createOntology {
     }
 
 
-    static public void fill_object_properties(Vector<Individual> domain, OntClass domainClass, Vector<String[]> data, String uri, ObjectProperty property, int index, Vector<Individual> range, DatatypeProperty commanNameProperty, DatatypeProperty Property)
+    static public void fill_object_properties(Vector<Individual> domain, Vector<Individual> range, Vector<String[]> data,
+                                              DatatypeProperty rangeProperty, DatatypeProperty domainProperty, ObjectProperty property, int index)
     {
         for(int i=0; i<domain.size(); i++)
         {
@@ -56,7 +57,7 @@ public class createOntology {
                 data.get(i)[index] = data.get(i)[index].replace(" ", "_");
 
             for(int j = 0; j < range.size(); j++) {
-                if(range.get(j).getPropertyValue(commanNameProperty).equals(domain.get(i).getPropertyValue(Property))) {
+                if(range.get(j).getPropertyValue(rangeProperty).equals(domain.get(i).getPropertyValue(domainProperty))) {
                     domain.get(i).addProperty(property, range.get(j));
                     break;
                 }
@@ -104,7 +105,7 @@ public class createOntology {
         Vector<Individual> teamIndividuals =  make_dataProperties_individuals(teamsData, model, baseURI, teamClass);
 
 
-        DatatypeProperty commanNameProperty = model.getDatatypeProperty(baseURI + teamsData.get(0)[1]);
+        DatatypeProperty commonNameProperty = model.getDatatypeProperty(baseURI + teamsData.get(0)[1]);
         DatatypeProperty currentClubProperty = model.getDatatypeProperty(baseURI + playersData.get(0)[5]);
 
         DatatypeProperty homeTeamNameProperty = model.getDatatypeProperty(baseURI + matchesData.get(0)[4]);
@@ -113,11 +114,11 @@ public class createOntology {
 
         // filling object properties
         // playsInClub (player, team)  with column (current_club)
-        fill_object_properties(playerIndividuals, playerClass, playersData, baseURI, playsInClub, 5, teamIndividuals, commanNameProperty, currentClubProperty);
+        fill_object_properties(playerIndividuals, teamIndividuals, playersData, commonNameProperty, currentClubProperty, playsInClub, 5);
         // hasHomeTeam (match, team) with column (home_team_name)
-        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasHomeTeam, 4,teamIndividuals,commanNameProperty,homeTeamNameProperty);
+        fill_object_properties(matchIndividuals, teamIndividuals, matchesData, commonNameProperty, homeTeamNameProperty, hasHomeTeam, 4);
         // hasAwayTeam (match, team) with column (away_team_name)
-        fill_object_properties(matchIndividuals, matchClass, matchesData, baseURI, hasAwayTeam, 5,teamIndividuals,commanNameProperty,awayTeamNameProperty);
+        fill_object_properties(matchIndividuals, teamIndividuals, matchesData, commonNameProperty, awayTeamNameProperty, hasAwayTeam, 5);
 
 
         model.write(System.out);
