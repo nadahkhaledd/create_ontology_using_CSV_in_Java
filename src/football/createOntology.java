@@ -1,5 +1,6 @@
 package football;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.ontology.*;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.vocabulary.XSD;
@@ -29,12 +30,20 @@ public class createOntology {
             individuals.add(instance);
             for(int j=0; j<data.get(0).length; j++)
             {
+
+                if(data.get(0)[j].contains(" ") || data.get(0)[j].contains("(") || data.get(0)[j].contains(")")) {
+                    data.get(0)[j] = data.get(0)[j].replace(" ", "_");
+                    data.get(0)[j] = data.get(0)[j].replace("(", "");
+                    data.get(0)[j] = data.get(0)[j].replace(")", "");
+                }
+
                 DatatypeProperty ontologyProperty = model.createDatatypeProperty(uri + data.get(0)[j]);
                 ontologyProperty.addDomain(dataClass);
 
-                if(data.get(0)[j].contains("overall") || data.get(0)[j].contains("counts"))
+                //System.out.println(data.get(1)[j].getClass().getSimpleName());
+                if(StringUtils.isNumeric(data.get(1)[j]) && !data.get(0)[j].contains("points_per_game"))
                     ontologyProperty.addRange(XSD.integer);
-                else if(data.get(0)[j].equalsIgnoreCase("points_per_game"))
+                else if(data.get(0)[j].contains("points_per_game"))
                     ontologyProperty.addRange(XSD.xdouble);
                 else
                     ontologyProperty.addRange(XSD.xstring);
@@ -68,9 +77,9 @@ public class createOntology {
 
     public static void main(String[] args) throws IOException {
         readAndConvert csvRead = new readAndConvert();
-        Vector<String[]> matchesData = readAndConvert.getFullData("src\\matches.csv");
-        Vector<String[]> playersData = readAndConvert.getFullData("src\\players.csv");
-        Vector<String[]> teamsData = readAndConvert.getFullData("src\\teams.csv");
+        Vector<String[]> matchesData = readAndConvert.getFullData("src\\england-premier-league-matches-2018-to-2019-stats.csv");
+        Vector<String[]> playersData = readAndConvert.getFullData("src\\england-premier-league-players-2018-to-2019-stats.csv");
+        Vector<String[]> teamsData = readAndConvert.getFullData("src\\england-premier-league-teams-2018-to-2019-stats.csv");
 
         //create ontology
         String baseURI = "http://www.semanticweb.org/nada/ontologies/2021/11/project1#";
