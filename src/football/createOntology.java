@@ -11,7 +11,8 @@ import java.util.Vector;
 public class createOntology {
 
 
-    static public Vector<Individual> make_dataProperties_individuals(Vector<String[]> data, OntModel model, String uri, OntClass dataClass)
+    static public Vector<Individual> make_dataProperties_individuals(Vector<String[]> data, OntModel model,
+                                                                     String uri, OntClass dataClass)
     {
         Vector<Individual> individuals = new Vector<Individual>();
 
@@ -40,7 +41,6 @@ public class createOntology {
                 DatatypeProperty ontologyProperty = model.createDatatypeProperty(uri + data.get(0)[j]);
                 ontologyProperty.addDomain(dataClass);
 
-                //System.out.println(data.get(1)[j].getClass().getSimpleName());
                 if(StringUtils.isNumeric(data.get(1)[j]) && !data.get(0)[j].contains("points_per_game"))
                     ontologyProperty.addRange(XSD.integer);
                 else if(data.get(0)[j].contains("points_per_game"))
@@ -58,22 +58,24 @@ public class createOntology {
 
 
     static public void fill_object_properties(Vector<Individual> domain, Vector<Individual> range, Vector<String[]> data,
-                                              DatatypeProperty rangeProperty, DatatypeProperty domainProperty, ObjectProperty property, int index)
+                                              DatatypeProperty rangeProperty, DatatypeProperty domainProperty,
+                                              ObjectProperty property, int index)
     {
         for(int i=0; i<domain.size(); i++)
         {
             if(data.get(i)[index].contains(" "))
                 data.get(i)[index] = data.get(i)[index].replace(" ", "_");
 
-            for(int j = 0; j < range.size(); j++) {
-                if(range.get(j).getPropertyValue(rangeProperty).equals(domain.get(i).getPropertyValue(domainProperty))) {
-                    domain.get(i).addProperty(property, range.get(j));
+            for (Individual individual : range) {
+                if (individual.getPropertyValue(rangeProperty).equals(domain.get(i).getPropertyValue(domainProperty))) {
+                    domain.get(i).addProperty(property, individual);
                     break;
                 }
             }
 
         }
     }
+
 
     public static void main(String[] args) throws IOException {
         readAndConvert csvRead = new readAndConvert();
