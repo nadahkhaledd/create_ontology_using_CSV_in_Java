@@ -1,7 +1,7 @@
 # create_ontology_using_data_by_CSV_in_Java
 
 ### Problem definition
-- Create an ontology to be used for semantics by getting raw data from CSV files.
+- Create an ontology to be used for semantics by getting raw data from CSV files by the use of Java programming language.
 
 ### Input
 - CSV Files
